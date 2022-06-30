@@ -8,9 +8,6 @@ const port = process.env.PORT | 5000;
 app.use(cors());
 app.use(express.json());
 
-// const userDB = todo-data
-// const pass = om9AneO3LTWllaA7
-
 const uri =
   "mongodb+srv://todo-data:om9AneO3LTWllaA7@cluster0.locwg.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {
@@ -31,23 +28,41 @@ async function run() {
     });
 
     app.get("/todos", async (req, res) => {
-      const result = await todoCollection.find({}).toArray();
+      const result = (await todoCollection.find({}).toArray()).reverse();
       res.send(result);
     });
 
-    app.patch("/todo/:id", async (req, res) => {
+    app.patch("/updateTodo/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id)
-      const filter = { _id: ObjectId(id)};
-      const {updatedTodo} = req.body;
-      console.log(updatedTodo)
+      const filter = { _id: ObjectId(id) };
+      const { updatedTodo } = req.body;
       const updatedDoc = {
-        $set: { 
-            todo: updatedTodo
-        }
-      }
+        $set: {
+          todo: updatedTodo,
+        },
+      };
       const result = await todoCollection.updateOne(filter, updatedDoc);
-      res.send(result)
+      res.send(result);
+    });
+
+    app.put("/completeTodo/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const { complete } = req.body;
+      const updatedDoc = {
+        $set: {
+          complete: complete,
+        },
+      };
+      const result = await todoCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    app.delete("/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await todoCollection.deleteOne(filter);
+      res.send(result);
     });
   } finally {
   }
