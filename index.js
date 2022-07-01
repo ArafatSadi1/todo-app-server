@@ -39,7 +39,7 @@ async function run() {
       const { updatedTodo } = req.body;
       const updatedDoc = {
         $set: {
-          todo: updatedTodo,
+          task: updatedTodo,
         },
       };
       const result = await todoCollection.updateOne(filter, updatedDoc);
